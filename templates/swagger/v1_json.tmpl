@@ -10779,6 +10779,97 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/lfs/locks": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "List a repository's LFS locks",
+        "operationId": "repoListLFSLocks",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "description": "cursor to fetch from",
+            "name": "cursor",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "how many locks to fetch",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/LFSLockList"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/lfs/unlock_locks": {
+      "post": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "UnlockLFSLocks unlocks multiple LFS locks at once",
+        "operationId": "repoUnlockLFSLocks",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UnlockList"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/LFSUnlockedList"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/licenses": {
       "get": {
         "produces": [
@@ -22620,6 +22711,72 @@
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
+    "LFSLock": {
+      "description": "LFSLock represent a lock\nfor use with the locks API.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "locked_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "LockedAt"
+        },
+        "owner": {
+          "$ref": "#/definitions/LFSLockOwner"
+        },
+        "path": {
+          "type": "string",
+          "x-go-name": "Path"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "LFSLockList": {
+      "description": "LFSLockList represent a list of lock requested\nhttps://github.com/git-lfs/git-lfs/blob/master/docs/api/locking.md#list-locks",
+      "type": "object",
+      "properties": {
+        "locks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LFSLock"
+          },
+          "x-go-name": "Locks"
+        },
+        "next_cursor": {
+          "type": "string",
+          "x-go-name": "Next"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "LFSLockOwner": {
+      "description": "LFSLockOwner represent a lock owner\nfor use with the locks API.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "LFSUnlockedList": {
+      "description": "LFSUnlockedList gives the locks that were actually unlocked",
+      "type": "object",
+      "properties": {
+        "locks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LFSLock"
+          },
+          "x-go-name": "Locks"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
     "Label": {
       "description": "Label a label to an issue or a pr",
       "type": "object",
@@ -25010,6 +25167,22 @@
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
+    "UnlockList": {
+      "description": "UnlockList list of LFS lock ids to unlock",
+      "type": "object",
+      "properties": {
+        "lock_ids": {
+          "description": "ids to unlock\n\nin: body",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "x-go-name": "LockIds"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
     "UpdateBranchProtectionPriories": {
       "description": "UpdateBranchProtectionPriories a list to update the branch protection rule priorities",
       "type": "object",
@@ -25929,6 +26102,18 @@
         }
       }
     },
+    "LFSLockList": {
+      "description": "LFSLockList",
+      "schema": {
+        "$ref": "#/definitions/LFSLockList"
+      }
+    },
+    "LFSUnlockedList": {
+      "description": "LFSUnlockedList",
+      "schema": {
+        "$ref": "#/definitions/LFSUnlockedList"
+      }
+    },
     "Label": {
       "description": "Label",
       "schema": {
@@ -26541,7 +26726,7 @@
     "parameterBodies": {
       "description": "parameterBodies",
       "schema": {
-        "$ref": "#/definitions/UpdateVariableOption"
+        "$ref": "#/definitions/UnlockList"
       }
     },
     "redirect": {

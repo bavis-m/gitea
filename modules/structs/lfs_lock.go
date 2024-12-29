@@ -9,6 +9,8 @@ import (
 
 // LFSLock represent a lock
 // for use with the locks API.
+//
+//swagger:model
 type LFSLock struct {
 	ID       string        `json:"id"`
 	Path     string        `json:"path"`
@@ -36,6 +38,7 @@ type LFSLockResponse struct {
 
 // LFSLockList represent a list of lock requested
 // https://github.com/git-lfs/git-lfs/blob/master/docs/api/locking.md#list-locks
+// swagger:response LFSLockList
 type LFSLockList struct {
 	Locks []*LFSLock `json:"locks"`
 	Next  string     `json:"next_cursor,omitempty"`
@@ -61,4 +64,18 @@ type LFSLockError struct {
 // https://github.com/git-lfs/git-lfs/blob/master/docs/api/locking.md#delete-lock
 type LFSLockDeleteRequest struct {
 	Force bool `json:"force"`
+}
+
+// UnlockList list of LFS lock ids to unlock
+type UnlockList struct {
+	// ids to unlock
+	//
+	// in: body
+	LockIds []int64 `json:"lock_ids"`
+}
+
+// LFSUnlockedList gives the locks that were actually unlocked
+// swagger:response LFSUnlockedList
+type LFSUnlockedList struct {
+	Locks []*LFSLock `json:"locks"`
 }

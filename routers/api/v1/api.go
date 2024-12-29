@@ -1379,6 +1379,10 @@ func Routes() *web.Router {
 					m.Post("", bind(api.UpdateRepoAvatarOption{}), repo.UpdateAvatar)
 					m.Delete("", repo.DeleteAvatar)
 				}, reqAdmin(), reqToken())
+				m.Group("/lfs", func() {
+					m.Get("/locks", repo.ListLFSLocks)
+					m.Post("/unlock_locks", bind(api.UnlockList{}), reqRepoWriter(unit.TypeCode), repo.UnlockLFSLocks)
+				}, reqRepoReader(unit.TypeCode))
 
 				m.Get("/{ball_type:tarball|zipball|bundle}/*", reqRepoReader(unit.TypeCode), repo.DownloadArchive)
 			}, repoAssignment(), checkTokenPublicOnly())

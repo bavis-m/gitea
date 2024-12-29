@@ -210,4 +210,7 @@ type swaggerParameterBodies struct {
 
 	// in:body
 	UpdateVariableOption api.UpdateVariableOption
+
+	// in:body
+	UnlockList api.UnlockList
 }
