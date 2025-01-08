@@ -100,7 +100,7 @@ func UnlockLFSLocks(ctx *context.APIContext) {
 	//   "404":
 	//     "$ref": "#/responses/notFound"
 
-	lockIds, ok := web.GetForm(ctx).(*api.UnlockList)
+	unlockReq, ok := web.GetForm(ctx).(*api.UnlockList)
 	if !ok {
 		log.Error("Invalid data")
 		ctx.JSON(http.StatusBadRequest, api.LFSLockError{
@@ -109,9 +109,9 @@ func UnlockLFSLocks(ctx *context.APIContext) {
 		return
 	}
 
-	lockListAPI := make([]*api.LFSLock, 0, len(lockIds.LockIds))
-	for _, id := range lockIds.LockIds {
-		lock, err := git_model.DeleteLFSLockByID(ctx, id, ctx.Repo.Repository, ctx.Doer /*req.Force*/, false)
+	lockListAPI := make([]*api.LFSLock, 0, len(unlockReq.LockIds))
+	for _, id := range unlockReq.LockIds {
+		lock, err := git_model.DeleteLFSLockByID(ctx, id, ctx.Repo.Repository, ctx.Doer, unlockReq.Force)
 		if git_model.IsErrLFSLockNotExist(err) {
 			// this is OK
 		} else if err != nil {

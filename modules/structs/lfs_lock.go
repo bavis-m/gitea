@@ -72,6 +72,7 @@ type UnlockList struct {
 	//
 	// in: body
 	LockIds []int64 `json:"lock_ids"`
+	Force   bool    `json:"force"`
 }
 
 // LFSUnlockedList gives the locks that were actually unlocked

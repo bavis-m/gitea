@@ -25171,6 +25171,10 @@
       "description": "UnlockList list of LFS lock ids to unlock",
       "type": "object",
       "properties": {
+        "force": {
+          "type": "boolean",
+          "x-go-name": "Force"
+        },
         "lock_ids": {
           "description": "ids to unlock\n\nin: body",
           "type": "array",
